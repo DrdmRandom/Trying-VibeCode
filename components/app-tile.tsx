@@ -66,8 +66,8 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="h-auto min-h-[260px] w-full min-w-0">
-      <Card className="group flex h-auto min-h-[260px] w-full min-w-0 flex-col border-white/10 bg-white/5">
+    <motion.div whileHover={{ y: -4 }} className="h-auto min-h-[260px] w-[260px] flex-shrink-0">
+      <Card className="group flex h-auto min-h-[260px] w-[260px] flex-shrink-0 flex-col border-white/10 bg-white/5">
         <CardContent className="flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
