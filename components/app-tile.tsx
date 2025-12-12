@@ -66,9 +66,9 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="h-full">
-      <Card className="group flex h-full flex-col justify-between border-white/10 bg-white/5">
-        <CardContent className="space-y-4 p-5">
+    <motion.div whileHover={{ y: -4 }} className="h-auto min-h-[260px]">
+      <Card className="group flex h-auto min-h-[260px] flex-col border-white/10 bg-white/5">
+        <CardContent className="flex h-full flex-col gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-sky-100 shadow-inner shadow-black/20">
@@ -78,17 +78,17 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
                   <img src={app.icon} alt={app.name} className="h-10 w-10 rounded-xl object-cover" />
                 )}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white">{app.name}</h3>
-                {app.description && <p className="text-sm text-white/70">{app.description}</p>}
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-white whitespace-normal break-words leading-tight">{app.name}</h3>
+                {app.description && <p className="text-sm text-white/70 whitespace-normal break-words">{app.description}</p>}
               </div>
             </div>
             <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
           </div>
 
-          <div className="flex items-center justify-between text-sm text-white/70">
+          <div className="flex items-start justify-between gap-3 text-sm text-white/70">
             <span className="rounded-lg bg-white/5 px-3 py-1 text-xs uppercase tracking-wide text-white/70">{app.mode === "domain" ? "Domain" : "IP:Port"}</span>
-            <span className="truncate text-right text-white/80">
+            <span className="text-right text-white/80 whitespace-normal break-words break-all">
               {app.mode === "domain" ? app.domain : `${app.ip}:${app.port}`}
             </span>
           </div>
@@ -96,14 +96,14 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
           {app.tags && app.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {app.tags.map((tag) => (
-                <Badge key={tag} variant="default" className="bg-white/10 text-white/80">
+                <Badge key={tag} variant="default" className="bg-white/10 text-white/80 whitespace-normal break-words">
                   {tag}
                 </Badge>
               ))}
             </div>
           )}
 
-          <Button asChild className="w-full justify-center bg-white/20 text-white shadow-soft transition group-hover:bg-white/30">
+          <Button asChild className="mt-auto w-full justify-center bg-white/20 text-white shadow-soft transition group-hover:bg-white/30">
             <a href={openUrl} target="_blank" rel="noreferrer">
               Open
             </a>
