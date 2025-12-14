@@ -9,15 +9,19 @@ import { AppItem } from "../lib/types";
 
 export default function HomePage() {
   const [apps, setApps] = useState<AppItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    setApps(loadApps());
+    const stored = loadApps();
+    setApps(stored);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     saveApps(apps);
-  }, [apps]);
+  }, [apps, hydrated]);
 
   const handleUpsert = (item: AppItem) => {
     setApps((prev) => {

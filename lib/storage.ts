@@ -2,7 +2,7 @@
 
 import { AppItem } from "./types";
 
-const STORAGE_KEY = "app_items_v1";
+const STORAGE_KEY = "homelab_apps";
 
 const seedApps: AppItem[] = [
   {
@@ -27,7 +27,7 @@ const seedApps: AppItem[] = [
   },
   {
     id: crypto.randomUUID(),
-    name: "AI Fish Detection",
+    name: "AI Fish Detection System",
     icon: "Fish",
     mode: "ipport",
     ip: "192.168.1.150",
