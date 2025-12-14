@@ -84,6 +84,8 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
     tags: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const dialogOpen = open ?? internalOpen;
   const setDialogOpen = onOpenChange ?? setInternalOpen;
@@ -91,6 +93,8 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
   useEffect(() => {
     if (!dialogOpen) {
       setErrors({});
+      setSuccessMessage(null);
+      setSubmitError(null);
       return;
     }
     if (initialApp && dialogMode === "edit") {
@@ -118,6 +122,7 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
   [form.tags]);
 
   const handleSubmit = () => {
+    setSubmitError(null);
     const parsed = appSchema.safeParse({ ...form, mode });
     if (!parsed.success) {
       const map: Record<string, string> = {};
@@ -126,6 +131,8 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
         map[key ?? "form"] = issue.message;
       });
       setErrors(map);
+      setSuccessMessage(null);
+      setSubmitError("Please correct the highlighted fields.");
       return;
     }
 
@@ -142,8 +149,12 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
       tags: tagList,
       createdAt: dialogMode === "edit" && initialApp ? initialApp.createdAt : Date.now(),
     };
-    onSubmit(newItem);
-    setDialogOpen(false);
+    try {
+      onSubmit(newItem);
+      setSuccessMessage(dialogMode === "edit" ? "Changes saved successfully." : "App added successfully.");
+    } catch (err) {
+      setSubmitError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -262,6 +273,9 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
             <Label htmlFor="tags">Tags / Category</Label>
             <Input id="tags" placeholder="media, automation" value={form.tags} onChange={(e) => setForm((s) => ({ ...s, tags: e.target.value }))} />
           </div>
+
+          {successMessage && <p className="text-sm text-emerald-300">{successMessage}</p>}
+          {submitError && <p className="text-sm text-rose-200">{submitError}</p>}
 
           <div className="flex justify-end gap-2 pt-2">
             <DialogClose asChild>
