@@ -74,12 +74,12 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="min-h-[280px] w-[260px] shrink-0">
-      <Card className="group relative flex min-h-[280px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
+    <motion.div whileHover={{ y: -4 }} className="min-h-[300px] w-[260px] shrink-0">
+      <Card className="group relative flex min-h-[300px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="relative z-10 flex min-w-0 items-start justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-start gap-3">
               <div className="w-11 h-11 aspect-square shrink-0 rounded-xl bg-white/10 grid place-items-center">
                 {IconComponent ? (
                   <IconComponent className="w-6 h-6" />
@@ -88,11 +88,11 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 )}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
-                <h3 className="min-w-0 whitespace-normal break-words text-lg font-semibold leading-tight text-white">{app.name}</h3>
+                <h3 className="whitespace-normal break-words text-lg font-semibold leading-tight text-white">{app.name}</h3>
                 {app.description && <p className="min-w-0 whitespace-normal break-words text-sm text-white/70">{app.description}</p>}
               </div>
             </div>
-            <div className="relative z-10 flex items-start gap-2">
+            <div className="relative z-10 flex shrink-0 items-start gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
