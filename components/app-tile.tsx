@@ -74,8 +74,8 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="h-[320px] w-[320px] shrink-0">
-      <Card className="group relative flex h-[320px] w-[320px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
+    <motion.div whileHover={{ y: -3 }} className="relative z-0 h-[320px] w-[260px] shrink-0 hover:z-10">
+      <Card className="group relative flex h-[320px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="relative z-10 min-w-0 pr-24">
