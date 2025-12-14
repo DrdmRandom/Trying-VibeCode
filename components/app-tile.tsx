@@ -74,12 +74,13 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="h-auto min-h-[260px] w-[260px] flex-shrink-0">
-      <Card className="group flex h-auto min-h-[260px] w-[260px] flex-shrink-0 flex-col border-white/10 bg-white/5">
-        <CardContent className="flex h-full min-w-0 flex-col gap-4 p-5">
-          <div className="flex min-w-0 items-start justify-between gap-3">
+    <motion.div whileHover={{ y: -4 }} className="min-h-[260px] w-[260px] shrink-0">
+      <Card className="group relative flex min-h-[260px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
+        <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
+          <div className="relative z-10 flex min-w-0 items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="relative w-11 h-11 aspect-square shrink-0 rounded-xl bg-white/10 grid place-items-center">
+              <div className="w-11 h-11 aspect-square shrink-0 rounded-xl bg-white/10 grid place-items-center">
                 {IconComponent ? (
                   <IconComponent className="w-6 h-6" />
                 ) : (
@@ -91,17 +92,16 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 {app.description && <p className="min-w-0 whitespace-normal break-all text-sm text-white/70">{app.description}</p>}
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="relative z-10 flex items-start gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-white/70 opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                  <button
+                    className="relative z-20 inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/70 opacity-0 transition hover:bg-white/10 group-hover:opacity-100 focus:opacity-100"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <Icons.MoreVertical className="h-4 w-4" />
                     <span className="sr-only">Open menu</span>
-                  </Button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[140px]">
                   <DropdownMenuItem onSelect={() => setEditOpen(true)}>Edit</DropdownMenuItem>
