@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import * as Icons from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
@@ -71,14 +72,14 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
         <CardContent className="flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-sky-100 shadow-inner shadow-black/20">
+              <div className="relative w-11 h-11 aspect-square shrink-0 rounded-xl bg-white/10 grid place-items-center">
                 {IconComponent ? (
-                  <IconComponent className="h-6 w-6" />
+                  <IconComponent className="w-6 h-6" />
                 ) : (
-                  <img src={app.icon} alt={app.name} className="h-10 w-10 rounded-xl object-cover" />
+                  <Image src={app.icon ?? ""} alt={app.name} fill sizes="44px" className="object-contain p-2" />
                 )}
               </div>
-              <div className="min-w-0 space-y-1">
+              <div className="min-w-0 flex-1 space-y-1">
                 <h3 className="min-w-0 whitespace-normal break-words break-all text-lg font-semibold leading-tight text-white">{app.name}</h3>
                 {app.description && <p className="min-w-0 whitespace-normal break-all text-sm text-white/70">{app.description}</p>}
               </div>

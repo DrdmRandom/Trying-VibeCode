@@ -12,16 +12,22 @@ interface TopBarProps {
 }
 
 export const TopBar = ({ onSearch, onAdd }: TopBarProps) => {
-  const { label } = useThemeMode();
-  const [clock, setClock] = useState(() => new Date());
+  const { label, mounted: themeMounted } = useThemeMode();
+  const [clock, setClock] = useState<Date | null>(null);
 
   useEffect(() => {
+    setClock(new Date());
     const timer = setInterval(() => setClock(new Date()), 1000 * 30);
     return () => clearInterval(timer);
   }, []);
 
-  const timeString = clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const dateString = clock.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  const timeString = clock
+    ? clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : "--:--";
+  const dateString = clock
+    ? clock.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })
+    : "--";
+  const modeLabel = themeMounted ? label : "--";
 
   return (
     <div className="glass-panel flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -31,7 +37,7 @@ export const TopBar = ({ onSearch, onAdd }: TopBarProps) => {
         </div>
         <div>
           <p className="text-2xl font-semibold text-white">{timeString}</p>
-          <p className="text-sm text-white/70">{dateString} · Mode: {label}</p>
+          <p className="text-sm text-white/70">{dateString} · Mode: {modeLabel}</p>
         </div>
       </div>
 
