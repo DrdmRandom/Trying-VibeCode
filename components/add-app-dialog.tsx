@@ -35,9 +35,7 @@ const appSchema = z
     mode: z.enum(["domain", "ipport"]),
     domain: z.string().optional(),
     ip: z.string().optional(),
-    port: z
-      .preprocess((v) => (v === "" || v === undefined ? undefined : Number(v)), z.number().int().min(1).max(65535))
-      .optional(),
+    port: z.any().optional(),
     description: z.string().optional(),
     tags: z.string().optional(),
   })
@@ -57,8 +55,17 @@ const appSchema = z
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ip"], message: "Use a valid IP or hostname" });
     }
 
-    if (data.port === undefined || Number.isNaN(data.port)) {
+    const portNumber =
+      typeof data.port === "number"
+        ? data.port
+        : typeof data.port === "string" && data.port.trim().length > 0
+        ? Number(data.port)
+        : undefined;
+
+    if (portNumber === undefined || Number.isNaN(portNumber)) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["port"], message: "Port is required" });
+    } else if (!Number.isInteger(portNumber) || portNumber < 1 || portNumber > 65535) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["port"], message: "Port must be 1-65535" });
     }
   });
 
@@ -123,6 +130,7 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
 
   const handleSubmit = () => {
     setSubmitError(null);
+    setSuccessMessage(null);
     const parsed = appSchema.safeParse({ ...form, mode });
     if (!parsed.success) {
       const map: Record<string, string> = {};
@@ -131,12 +139,21 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
         map[key ?? "form"] = issue.message;
       });
       setErrors(map);
-      setSuccessMessage(null);
-      setSubmitError("Please correct the highlighted fields.");
+      const hasVisibleErrors =
+        mode === "domain"
+          ? Boolean(map.name || map.domain)
+          : Boolean(map.name || map.ip || map.port);
+      setSubmitError(hasVisibleErrors ? "Please correct the highlighted fields." : null);
       return;
     }
 
     const data = parsed.data;
+    const normalizedPort =
+      typeof data.port === "number"
+        ? data.port
+        : typeof data.port === "string" && data.port.trim().length > 0
+        ? Number(data.port)
+        : undefined;
     const newItem: AppItem = {
       id: dialogMode === "edit" && initialApp ? initialApp.id : crypto.randomUUID(),
       name: data.name.trim(),
@@ -144,13 +161,14 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
       mode,
       domain: mode === "domain" ? data.domain?.trim() : undefined,
       ip: mode === "ipport" ? data.ip?.trim() : undefined,
-      port: mode === "ipport" ? data.port : undefined,
+      port: mode === "ipport" ? normalizedPort : undefined,
       description: data.description?.trim() || undefined,
       tags: tagList,
       createdAt: dialogMode === "edit" && initialApp ? initialApp.createdAt : Date.now(),
     };
     try {
       onSubmit(newItem);
+      setErrors({});
       setSuccessMessage(dialogMode === "edit" ? "Changes saved successfully." : "App added successfully.");
     } catch (err) {
       setSubmitError("Something went wrong. Please try again.");
@@ -220,6 +238,20 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
                     setMode(opt.value);
                     if (opt.value === "domain") {
                       setForm((s) => ({ ...s, ip: "", port: "" }));
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.ip;
+                        delete next.port;
+                        return next;
+                      });
+                      setSubmitError(null);
+                    } else {
+                      setErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.domain;
+                        return next;
+                      });
+                      setSubmitError(null);
                     }
                   }}
                   className={cn(
