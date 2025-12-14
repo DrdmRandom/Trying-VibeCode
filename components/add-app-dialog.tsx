@@ -35,20 +35,31 @@ const appSchema = z
     mode: z.enum(["domain", "ipport"]),
     domain: z.string().optional(),
     ip: z.string().optional(),
-    port: z.preprocess((v) => (v === "" || v === undefined ? undefined : Number(v)), z.number().int().min(1).max(65535)).optional(),
+    port: z
+      .preprocess((v) => (v === "" || v === undefined ? undefined : Number(v)), z.number().int().min(1).max(65535))
+      .optional(),
     description: z.string().optional(),
     tags: z.string().optional(),
   })
-  .refine((data) => (data.mode === "domain" ? !!data.domain : !!data.ip && !!data.port), {
-    message: "Provide required fields for the selected type",
-  })
-  .refine((data) => (data.mode === "domain" && data.domain ? /^https?:\/\/.+/.test(data.domain) : true), {
-    message: "Domain must include http/https",
-    path: ["domain"],
-  })
-  .refine((data) => (data.mode === "ipport" && data.ip ? /^[\w.-]+$/.test(data.ip) : true), {
-    message: "Use a valid IP or hostname",
-    path: ["ip"],
+  .superRefine((data, ctx) => {
+    if (data.mode === "domain") {
+      if (!data.domain || data.domain.trim().length === 0) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["domain"], message: "Domain is required" });
+      } else if (!/^https?:\/\/.+/.test(data.domain.trim())) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["domain"], message: "Domain must include http/https" });
+      }
+      return;
+    }
+
+    if (!data.ip || data.ip.trim().length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ip"], message: "IP or hostname is required" });
+    } else if (!/^[\w.-]+$/.test(data.ip.trim())) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ip"], message: "Use a valid IP or hostname" });
+    }
+
+    if (data.port === undefined || Number.isNaN(data.port)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["port"], message: "Port is required" });
+    }
   });
 
 type AddAppDialogProps = {
@@ -194,7 +205,12 @@ export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, o
               ).map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setMode(opt.value)}
+                  onClick={() => {
+                    setMode(opt.value);
+                    if (opt.value === "domain") {
+                      setForm((s) => ({ ...s, ip: "", port: "" }));
+                    }
+                  }}
                   className={cn(
                     "flex-1 rounded-xl border border-white/10 px-4 py-2 text-sm text-white/80 transition hover:border-white/40",
                     mode === opt.value && "bg-white/15 border-white/40 text-white"
