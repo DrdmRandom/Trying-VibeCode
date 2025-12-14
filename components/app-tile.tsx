@@ -29,8 +29,8 @@ type AppTileProps = {
 };
 
 export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTileProps) => {
-  const TILE = 260;
-  const TILE_CLASS = "w-[260px] h-[260px]" as const;
+  const TILE = 300;
+  const TILE_CLASS = "w-[300px] h-[300px]" as const;
   const [status, setStatus] = useState<Status>(enablePing ? "checking" : "unknown");
   const [editOpen, setEditOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -79,7 +79,7 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
 
   return (
     <motion.div whileHover={{ y: -3 }} className={`relative z-0 shrink-0 hover:z-10 ${TILE_CLASS}`} style={{ width: TILE, height: TILE }}>
-      <Card className={`group relative flex shrink-0 flex-col overflow-hidden border-white/10 bg-white/5 ${TILE_CLASS}`} style={{ width: TILE, height: TILE }}>
+        <Card className={`group relative flex shrink-0 flex-col overflow-hidden border-white/10 bg-white/5 ${TILE_CLASS}`} style={{ width: TILE, height: TILE }}>
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="relative z-10 min-w-0 pr-24">
@@ -100,8 +100,10 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 )}
               </div>
             </div>
-            <div className="absolute right-0 top-0 flex items-start gap-2">
-              <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
+            <Badge className="absolute right-12 top-1 z-20" variant={statusStyles[status].variant}>
+              {statusStyles[status].label}
+            </Badge>
+            <div className="absolute right-0 top-0 flex items-start">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
