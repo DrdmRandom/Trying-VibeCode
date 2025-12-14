@@ -1,5 +1,7 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import React from "react";
+
 import { cn } from "../../lib/utils";
 
 export const Dialog = DialogPrimitive.Root;
@@ -25,13 +27,20 @@ export const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLD
   <div className={cn("mb-4 space-y-1", className)} {...props} />
 );
 
-export const DialogTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h2 className={cn("text-xl font-semibold", className)} {...props} />
+export const DialogTitle = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Title>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(
+  ({ className, ...props }, ref) => (
+    <DialogPrimitive.Title ref={ref} className={cn("text-xl font-semibold", className)} {...props} />
+  )
 );
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-export const DialogDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn("text-sm text-white/70", className)} {...props} />
-);
+export const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description ref={ref} className={cn("text-sm text-white/70", className)} {...props} />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export const DialogCloseButton = (props: DialogPrimitive.DialogCloseProps) => (
   <DialogPrimitive.Close
