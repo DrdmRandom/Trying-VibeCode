@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Badge, type BadgeProps } from "./ui/badge";
 import { Button } from "./ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { AddAppDialog } from "./add-app-dialog";
 import { AppItem } from "../lib/types";
 
 type Status = "checking" | "online" | "offline" | "unknown";
@@ -21,10 +24,14 @@ const statusStyles: Record<Status, { label: string; variant: BadgeProps["variant
 type AppTileProps = {
   app: AppItem;
   enablePing?: boolean;
+  onEdit: (item: AppItem) => void;
+  onDelete: (id: string) => void;
 };
 
-export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
+export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTileProps) => {
   const [status, setStatus] = useState<Status>(enablePing ? "checking" : "unknown");
+  const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const targetUrl = useMemo(() => {
     if (app.mode === "domain") return app.domain ?? "";
@@ -84,7 +91,30 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
                 {app.description && <p className="min-w-0 whitespace-normal break-all text-sm text-white/70">{app.description}</p>}
               </div>
             </div>
-            <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
+            <div className="flex items-start gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-white/70 opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                  >
+                    <Icons.MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[140px]">
+                  <DropdownMenuItem onSelect={() => setEditOpen(true)}>Edit</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => setConfirmOpen(true)}
+                    className="text-rose-200 focus:text-rose-200"
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
+            </div>
           </div>
 
           <div className="flex min-w-0 items-start justify-between gap-3 text-sm text-white/70">
@@ -111,6 +141,36 @@ export const AppTile = ({ app, enablePing = true }: AppTileProps) => {
           </Button>
         </CardContent>
       </Card>
+      <AddAppDialog
+        mode="edit"
+        initialApp={app}
+        onSubmit={(updated) => onEdit(updated)}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        trigger={null}
+      />
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this app?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove {app.name} from your dashboard. You can add it again later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete(app.id);
+                setConfirmOpen(false);
+              }}
+              className="bg-rose-500 text-white hover:bg-rose-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

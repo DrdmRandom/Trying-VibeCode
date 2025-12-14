@@ -16,11 +16,19 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (apps.length > 0) saveApps(apps);
+    saveApps(apps);
   }, [apps]);
 
-  const handleAdd = (item: AppItem) => {
-    setApps((prev) => [item, ...prev]);
+  const handleUpsert = (item: AppItem) => {
+    setApps((prev) => {
+      const exists = prev.some((app) => app.id === item.id);
+      if (exists) return prev.map((app) => (app.id === item.id ? item : app));
+      return [item, ...prev];
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    setApps((prev) => prev.filter((app) => app.id !== id));
   };
 
   const filtered = useMemo(() => {
@@ -35,7 +43,7 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 p-4 sm:p-8">
-      <TopBar onSearch={setSearch} onAdd={handleAdd} />
+      <TopBar onSearch={setSearch} onUpsert={handleUpsert} />
 
       {filtered.length === 0 ? (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-8 text-center">
@@ -43,7 +51,7 @@ export default function HomePage() {
           <p className="text-sm text-white/60">Add a new app to populate your dashboard.</p>
         </motion.div>
       ) : (
-        <AppGrid apps={filtered} />
+        <AppGrid apps={filtered} onEdit={handleUpsert} onDelete={handleDelete} />
       )}
     </main>
   );

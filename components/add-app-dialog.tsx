@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { Plus } from "lucide-react";
 import { Button } from "./ui/button";
@@ -52,12 +52,17 @@ const appSchema = z
   });
 
 type AddAppDialogProps = {
-  onAdd: (item: AppItem) => void;
+  mode?: "add" | "edit";
+  initialApp?: AppItem;
+  onSubmit: (item: AppItem) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
 };
 
-export const AddAppDialog = ({ onAdd }: AddAppDialogProps) => {
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"domain" | "ipport">("domain");
+export const AddAppDialog = ({ mode: dialogMode = "add", initialApp, onSubmit, open, onOpenChange, trigger }: AddAppDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const [mode, setMode] = useState<"domain" | "ipport">(initialApp?.mode ?? "domain");
   const [form, setForm] = useState({
     name: "",
     icon: iconOptions[0],
@@ -69,13 +74,30 @@ export const AddAppDialog = ({ onAdd }: AddAppDialogProps) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const dialogOpen = open ?? internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
+
   useEffect(() => {
-    if (!open) {
-      setForm({ name: "", icon: iconOptions[0], domain: "https://", ip: "", port: "", description: "", tags: "" });
+    if (!dialogOpen) {
       setErrors({});
-      setMode("domain");
+      return;
     }
-  }, [open]);
+    if (initialApp && dialogMode === "edit") {
+      setMode(initialApp.mode);
+      setForm({
+        name: initialApp.name ?? "",
+        icon: initialApp.icon ?? iconOptions[0],
+        domain: initialApp.domain ?? "https://",
+        ip: initialApp.ip ?? "",
+        port: initialApp.port ? String(initialApp.port) : "",
+        description: initialApp.description ?? "",
+        tags: initialApp.tags?.join(", ") ?? "",
+      });
+    } else {
+      setMode("domain");
+      setForm({ name: "", icon: iconOptions[0], domain: "https://", ip: "", port: "", description: "", tags: "" });
+    }
+  }, [dialogOpen, initialApp, dialogMode]);
 
   const tagList = useMemo(() =>
     form.tags
@@ -98,7 +120,7 @@ export const AddAppDialog = ({ onAdd }: AddAppDialogProps) => {
 
     const data = parsed.data;
     const newItem: AppItem = {
-      id: crypto.randomUUID(),
+      id: dialogMode === "edit" && initialApp ? initialApp.id : crypto.randomUUID(),
       name: data.name.trim(),
       icon: data.icon || undefined,
       mode,
@@ -107,23 +129,29 @@ export const AddAppDialog = ({ onAdd }: AddAppDialogProps) => {
       port: mode === "ipport" ? data.port : undefined,
       description: data.description?.trim() || undefined,
       tags: tagList,
-      createdAt: Date.now(),
+      createdAt: dialogMode === "edit" && initialApp ? initialApp.createdAt : Date.now(),
     };
-    onAdd(newItem);
-    setOpen(false);
+    onSubmit(newItem);
+    setDialogOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2" size="sm">
-          <Plus className="h-4 w-4" /> Add App
-        </Button>
-      </DialogTrigger>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {trigger === undefined ? (
+        <DialogTrigger asChild>
+          <Button className="h-10 gap-2 px-4 whitespace-nowrap" size="default">
+            <Plus className="h-4 w-4" /> Add App
+          </Button>
+        </DialogTrigger>
+      ) : trigger ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : null}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a new app</DialogTitle>
-          <DialogDescription>Fill in the details to add a launcher tile.</DialogDescription>
+          <DialogTitle>{dialogMode === "edit" ? "Edit App" : "Add a new app"}</DialogTitle>
+          <DialogDescription>
+            {dialogMode === "edit" ? "Update the details for this launcher tile." : "Fill in the details to add a launcher tile."}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-1">
@@ -223,7 +251,7 @@ export const AddAppDialog = ({ onAdd }: AddAppDialogProps) => {
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleSubmit}>Save</Button>
+            <Button onClick={handleSubmit}>{dialogMode === "edit" ? "Save Changes" : "Add"}</Button>
           </div>
         </div>
       </DialogContent>

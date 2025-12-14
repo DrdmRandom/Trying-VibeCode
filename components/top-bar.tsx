@@ -8,10 +8,10 @@ import { AddAppDialog } from "./add-app-dialog";
 
 interface TopBarProps {
   onSearch: (value: string) => void;
-  onAdd: Parameters<typeof AddAppDialog>[0]["onAdd"];
+  onUpsert: Parameters<typeof AddAppDialog>[0]["onSubmit"];
 }
 
-export const TopBar = ({ onSearch, onAdd }: TopBarProps) => {
+export const TopBar = ({ onSearch, onUpsert }: TopBarProps) => {
   const { label, mounted: themeMounted } = useThemeMode();
   const [clock, setClock] = useState<Date | null>(null);
 
@@ -46,7 +46,7 @@ export const TopBar = ({ onSearch, onAdd }: TopBarProps) => {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
           <Input className="pl-9" placeholder="Search apps..." onChange={(e) => onSearch(e.target.value)} />
         </div>
-        <AddAppDialog onAdd={onAdd} />
+        <AddAppDialog onSubmit={onUpsert} />
       </div>
     </div>
   );

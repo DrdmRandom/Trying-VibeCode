@@ -54,7 +54,7 @@ function safeParse(): AppItem[] | null {
 export function loadApps(): AppItem[] {
   if (typeof window === "undefined") return [];
   const stored = safeParse();
-  if (!stored || stored.length === 0) {
+  if (!stored) {
     saveApps(seedApps);
     return seedApps;
   }
