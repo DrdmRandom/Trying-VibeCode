@@ -29,6 +29,8 @@ type AppTileProps = {
 };
 
 export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTileProps) => {
+  const TILE = 260;
+  const TILE_CLASS = "w-[260px] h-[260px]" as const;
   const [status, setStatus] = useState<Status>(enablePing ? "checking" : "unknown");
   const [editOpen, setEditOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -72,10 +74,12 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
   }, [app.icon]);
 
   const openUrl = targetUrl || "#";
+  const displayTags = (app.tags ?? []).slice(0, 2);
+  const extraTagsCount = (app.tags?.length ?? 0) - displayTags.length;
 
   return (
-    <motion.div whileHover={{ y: -3 }} className="relative z-0 h-[320px] w-[260px] shrink-0 hover:z-10">
-      <Card className="group relative flex h-[320px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
+    <motion.div whileHover={{ y: -3 }} className={`relative z-0 shrink-0 hover:z-10 ${TILE_CLASS}`} style={{ width: TILE, height: TILE }}>
+      <Card className={`group relative flex shrink-0 flex-col overflow-hidden border-white/10 bg-white/5 ${TILE_CLASS}`} style={{ width: TILE, height: TILE }}>
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="relative z-10 min-w-0 pr-24">
@@ -123,18 +127,23 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
 
           <div className="flex min-w-0 items-start justify-between gap-3 text-sm text-white/70">
             <span className="rounded-lg bg-white/5 px-3 py-1 text-xs uppercase tracking-wide text-white/70">{app.mode === "domain" ? "Domain" : "IP:Port"}</span>
-            <span className="flex-1 text-right text-white/80 whitespace-normal break-all">
+            <span className="flex-1 text-right text-white/80 whitespace-normal break-all line-clamp-2">
               {app.mode === "domain" ? app.domain : `${app.ip}:${app.port}`}
             </span>
           </div>
 
           {app.tags && app.tags.length > 0 && (
             <div className="flex min-w-0 flex-wrap gap-2">
-              {app.tags.map((tag) => (
+              {displayTags.map((tag) => (
                 <Badge key={tag} variant="default" className="bg-white/10 text-white/80 whitespace-normal break-all">
                   {tag}
                 </Badge>
               ))}
+              {extraTagsCount > 0 && (
+                <Badge variant="outline" className="border-white/20 bg-white/5 text-white/70">
+                  +{extraTagsCount}
+                </Badge>
+              )}
             </div>
           )}
 
