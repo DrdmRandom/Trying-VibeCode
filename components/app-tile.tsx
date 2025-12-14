@@ -78,8 +78,8 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
       <Card className="group relative flex min-h-[300px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
-          <div className="relative z-10 flex min-w-0 items-start gap-3">
-            <div className="flex min-w-0 flex-1 items-start gap-3">
+          <div className="relative z-10 min-w-0 pr-24">
+            <div className="flex min-w-0 items-start gap-3">
               <div className="w-11 h-11 aspect-square shrink-0 rounded-xl bg-white/10 grid place-items-center">
                 {IconComponent ? (
                   <IconComponent className="w-6 h-6" />
@@ -92,7 +92,8 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 {app.description && <p className="min-w-0 whitespace-normal break-words text-sm text-white/70">{app.description}</p>}
               </div>
             </div>
-            <div className="relative z-10 flex shrink-0 items-start gap-2">
+            <div className="absolute right-0 top-0 flex items-start gap-2">
+              <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -113,7 +114,6 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Badge variant={statusStyles[status].variant}>{statusStyles[status].label}</Badge>
             </div>
           </div>
 
