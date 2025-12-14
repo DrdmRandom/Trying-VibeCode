@@ -74,8 +74,8 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
   const openUrl = targetUrl || "#";
 
   return (
-    <motion.div whileHover={{ y: -4 }} className="min-h-[300px] w-[260px] shrink-0">
-      <Card className="group relative flex min-h-[300px] w-[260px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
+    <motion.div whileHover={{ y: -4 }} className="h-[320px] w-[320px] shrink-0">
+      <Card className="group relative flex h-[320px] w-[320px] shrink-0 flex-col overflow-hidden border-white/10 bg-white/5">
         <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
         <CardContent className="relative z-10 flex h-full min-w-0 flex-col gap-4 p-5">
           <div className="relative z-10 min-w-0 pr-24">
@@ -88,8 +88,12 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 )}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
-                <h3 className="whitespace-normal break-words text-lg font-semibold leading-tight text-white text-balance">{app.name}</h3>
-                {app.description && <p className="min-w-0 whitespace-normal break-words text-sm text-white/70">{app.description}</p>}
+                <h3 className="line-clamp-2 whitespace-normal break-words text-lg font-semibold leading-tight text-white text-balance">
+                  {app.name}
+                </h3>
+                {app.description && (
+                  <p className="min-w-0 whitespace-normal break-words text-sm text-white/70 line-clamp-2">{app.description}</p>
+                )}
               </div>
             </div>
             <div className="absolute right-0 top-0 flex items-start gap-2">
