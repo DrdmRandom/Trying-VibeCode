@@ -144,7 +144,7 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
                 </Badge>
               ))}
               {extraTagsCount > 0 && (
-                <Badge variant="outline" className="border-white/20 bg-white/5 text-white/70">
+                <Badge variant="default" className="border-white/20 bg-white/5 text-white/70">
                   +{extraTagsCount}
                 </Badge>
               )}
