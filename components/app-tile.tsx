@@ -66,11 +66,13 @@ export const AppTile = ({ app, enablePing = true, onEdit, onDelete }: AppTilePro
     };
   }, [enablePing, targetUrl]);
 
-  const IconComponent = useMemo<ComponentType<{ className?: string }> | null>(() => {
+  type IconType = ComponentType<Icons.LucideProps>;
+
+  const IconComponent = useMemo<IconType | null>(() => {
     if (!app.icon) return Icons.AppWindow;
     if (/^https?:\/\//.test(app.icon)) return null;
     const maybe = Icons[app.icon as keyof typeof Icons];
-    return maybe ?? Icons.AppWindow;
+    return typeof maybe === "function" ? (maybe as IconType) : Icons.AppWindow;
   }, [app.icon]);
 
   const openUrl = targetUrl || "#";
