@@ -1,3 +1,5 @@
+"use client";
+
 import { AppItem } from "../lib/types";
 import { AppTile } from "./app-tile";
 
