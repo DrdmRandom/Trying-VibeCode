@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "../components/theme-provider";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Homelab Dashboard",
@@ -11,11 +11,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
+        <Providers>
           <div className="min-h-screen bg-glow-grid bg-[length:120px_120px]">
             {children}
           </div>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
